@@ -33,7 +33,11 @@ jobs:
         id: has_commits
         run: |
           TAG="${{ steps.latest_tag.outputs.tag }}"
-          COUNT=$(git rev-list "${TAG}..HEAD" --count 2>/dev/null || echo "1")
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            COUNT=$(git rev-list "${TAG}..HEAD" --count)
+          else
+            COUNT=$(git rev-list HEAD --count)
+          fi
           echo "count=${COUNT}" >> "$GITHUB_OUTPUT"
 
       - name: Determine bump type from conventional commits
@@ -41,7 +45,11 @@ jobs:
         if: github.event_name == 'push' && steps.has_commits.outputs.count != '0'
         run: |
           TAG="${{ steps.latest_tag.outputs.tag }}"
-          COMMITS=$(git log "${TAG}..HEAD" --pretty=format:"%s" 2>/dev/null)
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            COMMITS=$(git log "${TAG}..HEAD" --pretty=format:"%s")
+          else
+            COMMITS=$(git log HEAD --pretty=format:"%s")
+          fi
           if echo "$COMMITS" | grep -qE '^(feat|fix|refactor|perf)(\(.+\))?!:|^BREAKING CHANGE'; then
             echo "bump=major" >> "$GITHUB_OUTPUT"
           elif echo "$COMMITS" | grep -qE '^feat(\(.+\))?:'; then
@@ -83,7 +91,11 @@ jobs:
         run: |
           TAG="${{ steps.latest_tag.outputs.tag }}"
           NEXT="${{ steps.next_version.outputs.version }}"
-          LOG=$(git log "${TAG}..HEAD" --pretty=format:"- %s (%h)" 2>/dev/null)
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            LOG=$(git log "${TAG}..HEAD" --pretty=format:"- %s (%h)")
+          else
+            LOG=$(git log HEAD --pretty=format:"- %s (%h)")
+          fi
           {
             echo "body<<EOF"
             echo "## What's changed in ${NEXT}"
