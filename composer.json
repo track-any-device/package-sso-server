@@ -1,0 +1,28 @@
+{
+    "name": "track-any-device/sso-server",
+    "description": "OAuth2 SSO authorization server — token issuance, migrations, and route helper.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.3",
+        "laravel/framework": "^13.7",
+        "laravel/passport": "^13.0",
+        "track-any-device/core": "^0.0.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "TrackAnyDevice\\SsoServer\\": "src/",
+            "TrackAnyDevice\\SsoServer\\Database\\Factories\\": "database/factories/",
+            "TrackAnyDevice\\SsoServer\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "TrackAnyDevice\\SsoServer\\SsoServerServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
