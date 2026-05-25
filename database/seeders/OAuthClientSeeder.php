@@ -20,7 +20,7 @@ class OAuthClientSeeder extends Seeder
 {
     public function run(): void
     {
-        $appDomain = config('sso-server.cental_domain', 'track-any-device.com');
+        $appDomain = config('sso-server.central_domain', 'track-any-device.com');
         $scheme    = str_starts_with((string) config('app.url', ''), 'https') ? 'https' : 'http';
 
         $singletons = [

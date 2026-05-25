@@ -14,7 +14,7 @@ return [
      */
     'app_domain' => env('APP_DOMAIN', 'my.track-any-device.com'),
 
-    'cental_domain' => env('CENTERAL_DOMAIN', 'track-any-device.com'),
+    'central_domain' => env('CENTRAL_DOMAIN', 'track-any-device.com'),
 
     /*
      * Hostname of the Filament admin panel.  Defaults to null (falls back to /admin on current host).
