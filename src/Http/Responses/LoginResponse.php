@@ -4,7 +4,6 @@ namespace TrackAnyDevice\SsoServer\Http\Responses;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Inertia\Inertia;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 use Symfony\Component\HttpFoundation\Response;
 use TrackAnyDevice\Core\Enums\OAuthClientKind;
@@ -50,7 +49,7 @@ class LoginResponse implements LoginResponseContract
                 ? $request->getScheme().'://'.$adminDomain
                 : url('/admin');
 
-            return Inertia::location($adminUrl);
+            return redirect()->away($adminUrl);
         }
 
         if ($user->role === Role::User) {
