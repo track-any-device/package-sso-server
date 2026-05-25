@@ -2,15 +2,16 @@
 
 namespace TrackAnyDevice\SsoServer\Http\Responses;
 
-use TrackAnyDevice\Core\Enums\OAuthClientKind;
-use TrackAnyDevice\Core\Enums\Role;
-use TrackAnyDevice\SsoServer\Models\OAuthClient;
-use TrackAnyDevice\Core\Enums\TenantStatus;
-use TrackAnyDevice\Core\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 use Symfony\Component\HttpFoundation\Response;
+use TrackAnyDevice\Core\Enums\OAuthClientKind;
+use TrackAnyDevice\Core\Enums\Role;
+use TrackAnyDevice\Core\Enums\TenantStatus;
+use TrackAnyDevice\Core\Models\User;
+use TrackAnyDevice\SsoServer\Models\OAuthClient;
 
 /**
  * Routes a freshly-authenticated user to the right destination.
@@ -44,7 +45,12 @@ class LoginResponse implements LoginResponseContract
         }
 
         if ($user->role?->isCentralStaff()) {
-            return redirect()->intended('/admin');
+            $adminDomain = config('sso-server.admin_domain');
+            $adminUrl = $adminDomain
+                ? $request->getScheme().'://'.$adminDomain
+                : url('/admin');
+
+            return Inertia::location($adminUrl);
         }
 
         if ($user->role === Role::User) {
@@ -105,9 +111,9 @@ class LoginResponse implements LoginResponseContract
 
         $authorizeUrl = $base.'?'.http_build_query([
             'response_type' => 'code',
-            'client_id'     => $client->client_id,
-            'redirect_uri'  => $client->redirect_uris[0],
-            'state'         => Str::random(40),
+            'client_id' => $client->client_id,
+            'redirect_uri' => $client->redirect_uris[0],
+            'state' => Str::random(40),
         ]);
 
         return redirect()->away($authorizeUrl);
