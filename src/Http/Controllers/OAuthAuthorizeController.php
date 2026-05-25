@@ -3,6 +3,7 @@
 namespace TrackAnyDevice\SsoServer\Http\Controllers;
 
 use TrackAnyDevice\Core\Enums\OAuthClientKind;
+use TrackAnyDevice\Core\Enums\Role;
 use TrackAnyDevice\SsoServer\Models\OAuthClient;
 use TrackAnyDevice\Core\Models\User;
 use Illuminate\Http\Request;
@@ -60,12 +61,18 @@ class OAuthAuthorizeController extends AuthorizationController
             return redirect()->route('login');
         }
 
-        if ($client->kind === OAuthClientKind::Admin
+        // Access rules per role:
+        //   central staff  → all clients
+        //   tenant_user    → my.* + their own tenant
+        //   user           → my.* + web
+        //   web            → everyone
+
+        if (in_array($client->kind, [OAuthClientKind::Admin, OAuthClientKind::GraphQl], true)
             && ! $user->role?->isCentralStaff()
         ) {
             auth()->logout();
             return redirect()->route('login')
-                ->withErrors(['email' => 'You do not have admin access.']);
+                ->withErrors(['email' => 'You do not have access to that application.']);
         }
 
         if ($client->kind === OAuthClientKind::Tenant
@@ -87,6 +94,11 @@ class OAuthAuthorizeController extends AuthorizationController
     {
         if ($user->role?->isCentralStaff()) {
             return true;
+        }
+
+        // End-customers (Role::User) are not tenant portal users.
+        if ($user->role === Role::User) {
+            return false;
         }
 
         if (! $client->tenant_id) {
