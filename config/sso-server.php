@@ -12,7 +12,9 @@ return [
      * Root domain used to derive sub-domain URLs (tenant subdomains, my., etc.).
      * Falls back to parsing APP_URL if APP_DOMAIN is not set.
      */
-    'app_domain' => env('APP_DOMAIN', 'track-any-device.com'),
+    'app_domain' => env('APP_DOMAIN', 'my.track-any-device.com'),
+
+    'cental_domain' => env('CENTERAL_DOMAIN', 'track-any-device.com'),
 
     /*
      * Hostname of the Filament admin panel.  Defaults to null (falls back to /admin on current host).
