@@ -155,6 +155,7 @@ class OAuthClient extends PassportClient
             OAuthClientKind::Admin   => 'tci_admin_',
             OAuthClientKind::GraphQl => 'tci_graphql_',
             OAuthClientKind::Tenant  => 'tci_tenant_',
+            OAuthClientKind::Mobile  => 'tci_mobile_',
         };
 
         return $prefix.Str::random(32);
