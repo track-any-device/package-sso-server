@@ -65,10 +65,18 @@ class ClientRepository implements ClientRepositoryInterface
             return false;
         }
 
-        // SsoClientServiceProvider sends the stored hash value itself as the
-        // client_secret (not the original plain text). Compare directly with
-        // hash_equals — Hash::check() must NOT be used here because it would
-        // do bcrypt_verify(hash, hash) which always returns false.
-        return hash_equals((string) $record->client_secret_hash, (string) $clientSecret);
+        $storedHash = (string) $record->client_secret_hash;
+        $incoming   = (string) $clientSecret;
+
+        // Standard OAuth2 clients (e.g. the web Next.js app) send the plain-text
+        // secret — verify with bcrypt.
+        if ($this->hasher->check($incoming, $storedHash)) {
+            return true;
+        }
+
+        // Socialite-based server apps (admin, graphql, tenant) read
+        // client_secret_hash directly from the DB and forward it as the
+        // client_secret — compare hash-to-hash.
+        return hash_equals($storedHash, $incoming);
     }
 }
