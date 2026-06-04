@@ -38,10 +38,10 @@ class OAuthAuthorizeController extends AuthorizationController
         $clientId = $request->query('client_id');
 
         // No OAuth flow in progress and user is already logged in → send them
-        // to my.{domain} rather than showing an error or blank screen.
+        // to the web portal (/my on the central domain, served by Next.js).
         if (! $clientId && $request->user()) {
-            $myDomain = config('sso-server.my_domain') ?: ('my.'.config('sso-server.app_domain', 'track-any-device.com'));
-            return redirect('https://'.$myDomain);
+            $centralDomain = config('sso-server.central_domain', config('sso-server.app_domain', 'track-any-device.com'));
+            return redirect('https://'.$centralDomain.'/my');
         }
 
         $client = OAuthClient::where('client_id', $clientId)

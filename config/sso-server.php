@@ -9,22 +9,20 @@ return [
     'surface' => env('APP_SURFACE', 'core'),
 
     /*
-     * Root domain used to derive sub-domain URLs (tenant subdomains, my., etc.).
-     * Falls back to parsing APP_URL if APP_DOMAIN is not set.
+     * Root domain, e.g. track-any-device.com.
      */
-    'app_domain' => env('APP_DOMAIN', 'my.track-any-device.com'),
+    'app_domain' => env('APP_DOMAIN', 'track-any-device.com'),
 
+    /*
+     * Central website domain — the Next.js app on Cloudflare Pages.
+     * The /my portal lives at {central_domain}/my (not a separate subdomain).
+     */
     'central_domain' => env('CENTRAL_DOMAIN', 'track-any-device.com'),
 
     /*
      * Hostname of the Filament admin panel.  Defaults to null (falls back to /admin on current host).
      */
     'admin_domain' => env('ADMIN_DOMAIN'),
-
-    /*
-     * Hostname of the end-user "my" app.  Defaults to my.{app_domain}.
-     */
-    'my_domain' => env('MY_DOMAIN'),
 
     /*
      * Hostname of the dedicated identity / login surface.
