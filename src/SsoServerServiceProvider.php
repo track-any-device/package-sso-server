@@ -47,6 +47,33 @@ class SsoServerServiceProvider extends ServiceProvider
         $this->app->singleton(\Laravel\Passport\ClientRepository::class, ClientRepository::class);
 
 
+        // ── OAuth2 scope registry ─────────────────────────────────────────────
+        // Every scope a client may request must be declared here. Passport
+        // rejects any scope not in this list with invalid_scope.
+        //
+        // Standard OpenID Connect scopes (identity layer):
+        //   openid   — required for OIDC; grants an id_token
+        //   profile  — user's display name and avatar
+        //   email    — user's email address
+        //   role     — user's platform role (admin / staff / tenant_user / user)
+        //
+        // Platform scopes (critical operations):
+        //   fleet:read   — read devices, signals, beats, incidents, assignees
+        //   fleet:write  — create / update fleet data (devices, beats, incidents)
+        //   admin        — access to the Filament admin panel (admin clients only)
+        Passport::tokensCan([
+            'openid'      => 'OpenID Connect identity',
+            'profile'     => 'User profile (name, avatar)',
+            'email'       => 'User email address',
+            'role'        => 'Platform role',
+            'fleet:read'  => 'Read fleet data — devices, signals, beats, incidents',
+            'fleet:write' => 'Manage fleet data — create and update devices, beats, incidents',
+            'admin'       => 'Admin panel access',
+        ]);
+
+        // Default scopes granted when a client requests no specific scopes.
+        Passport::setDefaultScope(['openid', 'profile', 'email', 'role']);
+
         // Authorization-code tokens are short-lived — the Socialite client
         // exchanges them immediately after the callback redirect.
         Passport::tokensExpireIn(now()->addMinutes(15));
