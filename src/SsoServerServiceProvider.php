@@ -74,9 +74,12 @@ class SsoServerServiceProvider extends ServiceProvider
         // Default scopes granted when a client requests no specific scopes.
         Passport::setDefaultScope(['openid', 'profile', 'email', 'role']);
 
-        // Authorization-code tokens are short-lived — the Socialite client
-        // exchanges them immediately after the callback redirect.
-        Passport::tokensExpireIn(now()->addMinutes(15));
+        // Access tokens must outlive the session that carries them.
+        // Socialite-based surfaces (admin, tenant) exchange the token
+        // immediately; the Next.js My portal stores it as a Bearer token
+        // for the entire session lifetime (24 h). Refresh tokens are kept
+        // for 30 days to support silent renewal.
+        Passport::tokensExpireIn(now()->addHours(24));
         Passport::refreshTokensExpireIn(now()->addDays(30));
 
         // Passport v12+ auto-registers all OAuth2 routes (token exchange,
