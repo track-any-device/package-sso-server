@@ -68,9 +68,12 @@ class OAuthClientSeeder extends Seeder
                 'kind'          => OAuthClientKind::Web,
                 'label'         => 'Web Portal',
                 'redirect_uris' => [
+                    // NextAuth v5 callback (current)
+                    "{$scheme}://{$appDomain}/api/auth/callback/sso",
+                    'http://localhost:3000/api/auth/callback/sso',
+                    'http://localhost/api/auth/callback/sso',
+                    // Legacy /sso/callback kept for zero-downtime rollout
                     "{$scheme}://{$appDomain}/sso/callback",
-                    'http://localhost:3000/sso/callback',
-                    'http://localhost/sso/callback',
                 ],
             ],
             [
